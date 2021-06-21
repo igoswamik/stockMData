@@ -1,49 +1,31 @@
 const express = require("express");
+const WebSocket = require("ws");
+const API = require("indian-stock-exchange");
 const app = express();
 const server = require("http").createServer(app);
-const WebSocket = require("ws");
-const yahooStockPrices = require("yahoo-stock-prices");
+
 const wss = new WebSocket.Server({ server: server });
 
-var unirest = require("unirest");
+const NSEAPI = API.NSE;
+const BSEAPI = API.BSE;
 
 const getData = async (ws) => {
-  //   const data = await yahooStockPrices.getCurrentData("AAPL");
-  //   console.log("data=", data); // { currency: 'USD', price: 132.05 }
-  var req = unirest("GET", "https://twelve-data1.p.rapidapi.com/quote");
-
-  req.query({
-    symbol: "AMZN",
-    interval: "1day",
-    outputsize: "30",
-    format: "json",
-  });
-
-  req.headers({
-    "x-rapidapi-key": "442b7a388emshc9f9d9690c9d95fp1b0fe3jsnfcf24d770bb7",
-    "x-rapidapi-host": "twelve-data1.p.rapidapi.com",
-    useQueryString: true,
-  });
-
-  req.end(function (res) {
-    if (res.error) {
-      console.log("res.error");
-    } else {
-      let data = res.body;
-      data = JSON.stringify(data);
+  BSEAPI.getIndices()
+    .then(function (response) {
+      console.log("got response");
+      console.log(response.data);
+      const data = JSON.stringify(response.data);
       ws.send(data);
-    }
-  });
+    })
+    .catch((err) => {
+      console.log("Error!!!");
+    });
 };
 
 wss.on("connection", function connection(ws) {
-  //console.log("ws=", ws);
   console.log("A new client Connected");
   ws.send("Welcome new client");
-  //while (true) {
-  //setTimeout(getData(ws),3000);
   getData(ws);
-  //}
 
   ws.on("message", function incoming(message) {
     console.log("received: %s", message);

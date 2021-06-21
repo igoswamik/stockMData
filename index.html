@@ -7,19 +7,29 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
 <body>
+    <nav class="navbar navbar-light bg-light text-center">
+        <div class="container-fluid text-center ">
+           <h4> Client 1 </h4>
+        </div>
+      </nav>
     
     <div class="container">
-        <h1>Client 1</h1>
-        <div class="row">
-            <div class="col-4-lg mb-3">
-                <!-- <form>
-                </form> -->
+        <h1 class="mb-3 mt-3 text-center">Stock market data</h1>
+        <table class="table table-striped table-hover mb-3">
+            <thead>
+              <tr>
+                <th scope="col">securityCode</th>
+                <th scope="col">key</th>
+                <th scope="col">pointChange</th>
+                <th scope="col">todayClose</th>
+                <th scope="col">pointPercent</th>
+              </tr>
+            </thead>
+            <tbody class="data">
+            </tbody>
+          </table>
+        <div >
                 <button onclick="sendMessage()">send message to server</button>
-            </div>
-            <div class="col-8-lg">
-                <h2>Stock market data</h2>
-                <div class="data"></div>
-            </div>
         </div>
     </div>
 
@@ -38,23 +48,19 @@ socket.addEventListener('open', function (event) {
 
 // Listen for messages
 socket.addEventListener('message', function (event) {
-    //console.log('Message from server ', event.data);
-   
 
     const dataSpace=document.querySelector(".data");
-    let ul=document.createElement('ul');
-    dataSpace.innerHTML="";
     
     let data=JSON.parse(event.data);
-    // console.log("data in html=",data);
-    for(let ele in data){
-        //console.log(data[ele]);
-        let li=document.createElement('li');
-        li.innerHTML=`${ele}: ${data[ele]}`;
-        ul.appendChild(li);
+    for(let ele of data){
+        let tr=document.createElement('tr');
+        for(let d in ele){  
+            let td=document.createElement('td');
+            td.innerHTML=` ${ele[d]}`;
+            tr.appendChild(td);
+        }
+        dataSpace.appendChild(tr);    
     }
-    dataSpace.appendChild(ul);    
-
 });
 
 //send msg
