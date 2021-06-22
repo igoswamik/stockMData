@@ -50,8 +50,9 @@ socket.addEventListener('open', function (event) {
 socket.addEventListener('message', function (event) {
 
     const dataSpace=document.querySelector(".data");
-    
+    dataSpace.innerHTML="";
     let data=JSON.parse(event.data);
+    //console.log("data in html=",data);
     for(let ele of data){
         let tr=document.createElement('tr');
         for(let d in ele){  
