@@ -9,23 +9,27 @@ const wss = new WebSocket.Server({ server: server });
 const NSEAPI = API.NSE;
 const BSEAPI = API.BSE;
 
-const getData = async (ws) => {
+const getData = (ws) => {
   BSEAPI.getIndices()
     .then(function (response) {
-      console.log("got response");
-      console.log(response.data);
+      //console.log("got response");
+      //console.log(response.data);
       const data = JSON.stringify(response.data);
       ws.send(data);
     })
     .catch((err) => {
-      console.log("Error!!!");
+      console.log("Error fetching data!!!");
     });
 };
 
 wss.on("connection", function connection(ws) {
   console.log("A new client Connected");
   ws.send("Welcome new client");
-  getData(ws);
+
+  var broadcast = function () {
+    getData(ws);
+  };
+  setInterval(broadcast, 3000);
 
   ws.on("message", function incoming(message) {
     console.log("received: %s", message);
