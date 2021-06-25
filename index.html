@@ -5,6 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Socket Thing1</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <style>
+        .featuredBtn.active {
+        background-color: #bf9471;
+        color: white;
+        }
+
+        .featuredBtn {
+        width: 250px;
+        height: 50px;
+        color: #8c8c8c;
+        font-weight: 700;
+        background-color: #f4efeb;
+        border: none;
+        letter-spacing: 2px;
+        outline: none;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-light bg-light text-center">
@@ -15,6 +32,13 @@
     
     <div class="container">
         <h1 class="mb-3 mt-3 text-center">Stock market data</h1>
+        <p>
+            Last Updated: <span id="time"></span>
+          </p>
+          <div>
+              <button id="BSE" class="featuredBtn active" onclick="sendMessage('BSE',this)" name="BSE">BSE</button>
+              <button id="NSE" class="featuredBtn"  onclick="sendMessage('NSE',this)" name="NSE">NSE</button>
+          </div>
         <table class="table table-striped table-hover mb-3">
             <thead>
               <tr>
@@ -28,9 +52,7 @@
             <tbody class="data">
             </tbody>
           </table>
-        <div >
-                <button onclick="sendMessage()">send message to server</button>
-        </div>
+    
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
@@ -46,13 +68,14 @@ socket.addEventListener('open', function (event) {
     console.log('Connected to Ws server');
 });
 
+
 // Listen for messages
 socket.addEventListener('message', function (event) {
-
     const dataSpace=document.querySelector(".data");
     dataSpace.innerHTML="";
     let data=JSON.parse(event.data);
-    //console.log("data in html=",data);
+      let time = new Date();
+      document.getElementById('time').innerHTML=time.toLocaleString();
     for(let ele of data){
         let tr=document.createElement('tr');
         for(let d in ele){  
@@ -64,9 +87,16 @@ socket.addEventListener('message', function (event) {
     }
 });
 
+
+
 //send msg
-const sendMessage=()=>{
-    socket.send('Hello from client1');
+const sendMessage=(value,object)=>{
+    document.getElementById("BSE").classList.remove("active");
+    document.getElementById("NSE").classList.remove("active");
+    document.getElementById(value).classList.add("active");
+    
+    socket.send(value);
 }
+
 </script>
 </html>
